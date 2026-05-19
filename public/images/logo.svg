@@ -1,0 +1,41 @@
+<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <path id="arcTop" d="M 32,115 A 80,80 0 0,1 188,115"/>
+  </defs>
+
+  <!-- Arc text: HAMBURGUER ARTESANAL -->
+  <text fill="#facc15" font-size="9.5" font-family="Arial, sans-serif" letter-spacing="3.2" font-weight="500">
+    <textPath href="#arcTop" startOffset="3%">HAMBURGUER ARTESANAL</textPath>
+  </text>
+
+  <!-- Top bun dome -->
+  <path d="M 68,108 Q 110,72 152,108" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Sesame seeds on bun -->
+  <ellipse cx="93" cy="88" rx="3.5" ry="2.5" fill="#facc15" transform="rotate(-15 93 88)"/>
+  <ellipse cx="110" cy="81" rx="3.5" ry="2.5" fill="#facc15"/>
+  <ellipse cx="127" cy="88" rx="3.5" ry="2.5" fill="#facc15" transform="rotate(15 127 88)"/>
+
+  <!-- Bun bottom edge line -->
+  <line x1="68" y1="108" x2="152" y2="108" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Lettuce / wavy sauce layer -->
+  <path d="M 65,116 Q 75,111 85,116 Q 95,121 105,116 Q 115,111 125,116 Q 135,121 145,116 Q 150,113 155,116"
+        stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Patty / cheese flat line -->
+  <line x1="65" y1="125" x2="155" y2="125" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Bottom bun (rounded rect) -->
+  <rect x="65" y="131" width="90" height="18" rx="9" stroke="#facc15" stroke-width="2.5"/>
+
+  <!-- Horizontal accent lines flanking the burger -->
+  <line x1="22" y1="140" x2="60" y2="140" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="160" y1="140" x2="198" y2="140" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- GUS BURGUER text -->
+  <text x="110" y="178" fill="#facc15" font-size="24" font-weight="900"
+        font-family="Arial Black, Arial, sans-serif" text-anchor="middle" letter-spacing="1">
+    GUS BURGUER
+  </text>
+</svg>

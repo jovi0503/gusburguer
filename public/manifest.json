@@ -1,0 +1,20 @@
+
+{
+  "name": "Gus Burguer",
+  "short_name": "GusBurguer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#facc15",
+  "description": "Hambúrgueres artesanais na sua porta.",
+  "icons": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "gcm_sender_id": "103953800507"
+}
+
+    
