@@ -36,34 +36,46 @@ const adminStorage = admin.storage(adminApp);
 // CONFIGURAÇÃO DA LÓGICA DE FRETE (DINÂMICO POR BAIRRO)
 // ===================================================================
 
-const FRETE_PROMOCIONAL = 5.99;
-const FRETE_PADRAO = 9.99;
 const UNAVAILABLE_SHIPPING_COST = -1;
 
-/**
- * Calcula o custo de frete com base no bairro do cliente.
- * Se o bairro for 'pernambues', aplica o frete promocional.
- * Caso contrário, aplica o frete padrão.
- * @param address - O endereço de destino do cliente.
- * @returns O custo do frete calculado.
- */
+// Bairros atendidos com o valor mínimo da faixa estimada de frete.
+// Chaves normalizadas: sem acentos, minúsculas (igual ao formulário de endereço).
+const FRETE_POR_BAIRRO: Record<string, number> = {
+    'narandiba':             4.50,
+    'cabula':                5.50,
+    'pernambues':            6.50,
+    'doron':                 6.50,
+    'mata escura':           5.00,
+    'resgate':               7.50,
+    'sussuarana':            5.50,
+    'tancredo neves':        7.50,
+    'engomadeira':           6.00,
+    'saboeiro':              5.00,
+    'sao goncalo do retiro': 8.50,
+    'brotas':               10.00,
+    'pituacu':              10.50,
+    'costa azul':           11.50,
+    'pituba':               13.00,
+};
+
 export async function calculateShippingAction(address: Address): Promise<number> {
     console.log(`--- [SERVER ACTION] Calculando frete para o bairro: ${address?.neighborhood}`);
-    
+
     if (!address || !address.neighborhood) {
         console.error('--- [SERVER ACTION] ERRO: Endereço ou bairro não fornecido.');
         return UNAVAILABLE_SHIPPING_COST;
     }
 
     const bairro = address.neighborhood.toLowerCase().trim();
-    
-    if (bairro === 'pernambues') {
-        console.log(`--- [SERVER ACTION] Bairro promocional detectado. Frete: R$ ${FRETE_PROMOCIONAL}`);
-        return FRETE_PROMOCIONAL;
-    } else {
-        console.log(`--- [SERVER ACTION] Bairro padrão. Frete: R$ ${FRETE_PADRAO}`);
-        return FRETE_PADRAO;
+    const frete = FRETE_POR_BAIRRO[bairro];
+
+    if (frete !== undefined) {
+        console.log(`--- [SERVER ACTION] Bairro "${bairro}" encontrado. Frete: R$ ${frete}`);
+        return frete;
     }
+
+    console.warn(`--- [SERVER ACTION] Bairro "${bairro}" fora da área de entrega.`);
+    return UNAVAILABLE_SHIPPING_COST;
 }
 
 

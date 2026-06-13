@@ -15,7 +15,8 @@ import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Loader2, User as UserIcon, Phone, PlusCircle, Home, Building, CreditCard, DollarSign, PowerOff, AlertCircle, ArrowLeft, CheckCircle2, Truck, ShoppingBag as ShoppingBagIcon, Pencil } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, User as UserIcon, Phone, PlusCircle, Home, Building, CreditCard, DollarSign, PowerOff, AlertCircle, ArrowLeft, CheckCircle2, Truck, ShoppingBag as ShoppingBagIcon, Pencil, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AddAddressForm } from '@/components/add-address-form';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -57,6 +58,8 @@ export default function CheckoutPage() {
     const [shippingCost, setShippingCost] = useState<number | null>(null);
     const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
     const [shippingError, setShippingError] = useState<string | null>(null);
+    const [isShippingPendingWhatsapp, setIsShippingPendingWhatsapp] = useState(false);
+    const [isVarandasDoVale, setIsVarandasDoVale] = useState(false);
 
     const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
     const [lastOrderId, setLastOrderId] = useState<string | null>(null);
@@ -81,6 +84,14 @@ export default function CheckoutPage() {
             if (deliveryOption === 'pickup') {
                 setShippingCost(0);
                 setShippingError(null);
+                setIsShippingPendingWhatsapp(false);
+                return;
+            }
+
+            if (isVarandasDoVale) {
+                setShippingCost(0);
+                setShippingError(null);
+                setIsShippingPendingWhatsapp(false);
                 return;
             }
 
@@ -102,10 +113,12 @@ export default function CheckoutPage() {
                 const cost = await calculateShippingAction(selectedAddress);
                 
                 if (cost === UNAVAILABLE_SHIPPING_COST) {
-                     setShippingError('Desculpe, a entrega não está disponível para este endereço.');
-                     setShippingCost(null);
+                    setShippingCost(0);
+                    setIsShippingPendingWhatsapp(true);
+                    setShippingError(null);
                 } else {
                     setShippingCost(cost);
+                    setIsShippingPendingWhatsapp(false);
                 }
             } catch (error) {
                 console.error("Erro ao calcular frete:", error);
@@ -117,7 +130,7 @@ export default function CheckoutPage() {
         };
 
         calculateShipping();
-    }, [selectedAddressId, addresses, deliveryOption]);
+    }, [selectedAddressId, addresses, deliveryOption, isVarandasDoVale]);
 
 
     const handleAddressSelection = (addressId: string) => {
@@ -161,6 +174,13 @@ export default function CheckoutPage() {
         setAddressToEdit(null);
         setIsAddressDialogOpen(true);
     }
+
+    const handleDeliveryOptionChange = (val: 'delivery' | 'pickup') => {
+        setDeliveryOption(val);
+        if (val === 'delivery' && paymentMethod === 'cash' && !isVarandasDoVale) {
+            setPaymentMethod(undefined);
+        }
+    };
     
     const total = shippingCost !== null ? totalPrice + shippingCost : totalPrice;
 
@@ -379,7 +399,7 @@ export default function CheckoutPage() {
                      <Card>
                         <CardHeader><CardTitle className="font-headline">2. Opção de Entrega</CardTitle></CardHeader>
                         <CardContent>
-                             <RadioGroup value={deliveryOption} onValueChange={(val: 'delivery' | 'pickup') => setDeliveryOption(val)} className="space-y-2">
+                             <RadioGroup value={deliveryOption} onValueChange={handleDeliveryOptionChange} className="space-y-2">
                                 <div className="flex items-center">
                                     <RadioGroupItem value="delivery" id="delivery" className="mr-3"/>
                                     <Label htmlFor="delivery" className="flex items-center border p-4 rounded-md w-full cursor-pointer hover:bg-muted/50">
@@ -430,6 +450,17 @@ export default function CheckoutPage() {
                                         {renderAddOrEditAddress()}
                                     </div>
                                 )}
+
+                                <div className="flex items-center space-x-2 mt-4 pt-4 border-t">
+                                    <Checkbox
+                                        id="varandas-do-vale"
+                                        checked={isVarandasDoVale}
+                                        onCheckedChange={(checked) => setIsVarandasDoVale(!!checked)}
+                                    />
+                                    <Label htmlFor="varandas-do-vale" className="cursor-pointer text-sm font-normal">
+                                        Sou morador do Varandas do Vale
+                                    </Label>
+                                </div>
                             </CardContent>
                              {addresses.length > 0 && (
                                 <CardFooter>
@@ -453,13 +484,15 @@ export default function CheckoutPage() {
                                         <span>Cartão de Crédito/Débito (na entrega/retirada)</span>
                                     </Label>
                                 </div>
-                                <div className="flex items-center">
-                                    <RadioGroupItem value="cash" id="cash" className="mr-3" />
-                                     <Label htmlFor="cash" className="flex items-center border p-4 rounded-md w-full cursor-pointer hover:bg-muted/50">
-                                        <DollarSign className="h-5 w-5 mr-3" />
-                                        <span>Dinheiro</span>
-                                     </Label>
-                                </div>
+                                {(deliveryOption === 'pickup' || isVarandasDoVale) && (
+                                    <div className="flex items-center">
+                                        <RadioGroupItem value="cash" id="cash" className="mr-3" />
+                                        <Label htmlFor="cash" className="flex items-center border p-4 rounded-md w-full cursor-pointer hover:bg-muted/50">
+                                            <DollarSign className="h-5 w-5 mr-3" />
+                                            <span>Dinheiro</span>
+                                        </Label>
+                                    </div>
+                                )}
                             </RadioGroup>
                              {paymentMethod === 'cash' && (
                                 <div className="pt-4 pl-2 space-y-2 animate-in fade-in">
@@ -501,13 +534,26 @@ export default function CheckoutPage() {
                                 <span>{deliveryOption === 'pickup' ? 'Taxa de Retirada' : 'Taxa de entrega'}</span>
                                 {isCalculatingShipping ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : isVarandasDoVale ? (
+                                    <span className="text-green-600 font-medium">Grátis</span>
+                                ) : isShippingPendingWhatsapp ? (
+                                    <span className="text-muted-foreground text-xs">A calcular</span>
                                 ) : shippingCost !== null ? (
                                     <span>{shippingCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                                 ) : (
                                     <span className="text-muted-foreground text-xs">Selecione uma opção</span>
                                 )}
                             </div>
-                            
+
+                            {isShippingPendingWhatsapp && (
+                                <Alert className="text-xs border-blue-200 bg-blue-50 text-blue-800">
+                                    <Info className="h-4 w-4 text-blue-600" />
+                                    <AlertDescription>
+                                        Seu bairro está fora da nossa área padrão. O frete será calculado e confirmado ao finalizar o pedido via WhatsApp.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
                             {shippingError && (
                                 <Alert variant="destructive" className="text-xs">
                                      <AlertCircle className="h-4 w-4" />
