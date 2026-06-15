@@ -11,13 +11,13 @@ import { getFirebaseApp } from '@/lib/firebase';
 // Horário de Funcionamento (Fuso Horário de Salvador)
 // Dia da semana: 0=Domingo, 1=Segunda, ..., 6=Sábado
 const schedule = {
-  0: { open: 10, close: 19 }, // Domingo: 10:00 às 19:00
-  1: null,                    // Segunda (Fechado)
-  2: { open: 13, close: 20 }, // Terça: 13:00 às 20:00
-  3: { open: 13, close: 20 }, // Quarta: 13:00 às 20:00
-  4: { open: 13, close: 20 }, // Quinta: 13:00 às 20:00
-  5: { open: 13, close: 20 }, // Sexta: 13:00 às 20:00
-  6: { open: 10, close: 20 }, // Sábado: 10:00 às 20:00
+  0: { open: 17, close: 23 }, // Domingo: 17:00 às 23:00
+  1: { open: 17, close: 23 }, // Segunda: 17:00 às 23:00
+  2: { open: 17, close: 23 }, // Terça: 17:00 às 23:00
+  3: { open: 17, close: 23 }, // Quarta: 17:00 às 23:00
+  4: { open: 17, close: 23 }, // Quinta: 17:00 às 23:00
+  5: { open: 17, close: 23 }, // Sexta: 17:00 às 23:00
+  6: { open: 17, close: 23 }, // Sábado: 17:00 às 23:00
 };
 
 type AutomaticStatus = 'open' | 'closed';
