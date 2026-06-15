@@ -88,6 +88,8 @@ export default function RootLayout({
       <head>
         <title>Gus Burguer</title>
         <meta name="description" content="Hambúrgueres artesanais na sua porta" />
+        <link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
+        <link rel="icon" type="image/png" href="/images/logo.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body antialiased bg-background text-foreground pb-32 md:pb-0">
